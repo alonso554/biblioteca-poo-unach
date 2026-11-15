@@ -1,0 +1,46 @@
+@startuml
+skinparam backgroundColor white
+skinparam defaultFontName DejaVu Sans
+skinparam defaultFontSize 15
+skinparam shadowing false
+skinparam ArrowColor #345570
+skinparam classBackgroundColor #F1F5F8
+skinparam classBorderColor #173B62
+skinparam classHeaderBackgroundColor #DCE7EF
+skinparam entityBackgroundColor #F1F5F8
+skinparam entityBorderColor #173B62
+skinparam usecaseBackgroundColor #F6F1E6
+skinparam usecaseBorderColor #AD9058
+skinparam actorBorderColor #173B62
+skinparam stateBackgroundColor #F1F5F8
+skinparam stateBorderColor #173B62
+left to right direction
+actor Visitante
+actor "Usuario autenticado" as U
+actor Administrador as A
+U --|> Visitante
+A --|> U
+rectangle "Sistema de biblioteca" {
+ usecase "Consultar y buscar catálogo" as UC1
+ usecase "Solicitar ejemplar\ncon datos de lector" as UC2
+ usecase "Iniciar / cerrar sesión" as UC3
+ usecase "Registrar cuenta USUARIO" as UC4
+ usecase "Gestionar libros (CRUD)" as UC5
+ usecase "Gestionar cuentas (CRUD)" as UC6
+ usecase "Confirmar / rechazar entrega" as UC7
+ usecase "Registrar devolución" as UC8
+ usecase "Registrar / resolver incidencia" as UC9
+ usecase "Consultar historiales" as UC10
+}
+Visitante -- UC1
+Visitante -- UC2
+Visitante -- UC3
+U -- UC4
+A -- UC5
+A -- UC6
+A -- UC7
+A -- UC8
+A -- UC9
+A -- UC10
+
+@enduml

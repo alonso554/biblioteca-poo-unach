@@ -1,0 +1,39 @@
+@startuml
+skinparam backgroundColor white
+skinparam defaultFontName DejaVu Sans
+skinparam defaultFontSize 15
+skinparam shadowing false
+skinparam ArrowColor #345570
+skinparam classBackgroundColor #F1F5F8
+skinparam classBorderColor #173B62
+skinparam classHeaderBackgroundColor #DCE7EF
+skinparam entityBackgroundColor #F1F5F8
+skinparam entityBorderColor #173B62
+skinparam usecaseBackgroundColor #F6F1E6
+skinparam usecaseBorderColor #AD9058
+skinparam actorBorderColor #173B62
+skinparam stateBackgroundColor #F1F5F8
+skinparam stateBorderColor #173B62
+left to right direction
+actor Persona
+node "Navegador" {
+ artifact "HTML + Thymeleaf\nBootstrap + CSS" as V
+}
+node "Spring Boot / Tomcat" {
+ component "Spring Security\nSesión, roles y CSRF" as SEC
+ component "Controladores MVC" as C
+ component "Servicios\nReglas y transacciones" as S
+ component "Repositorios JPA" as R
+ component "Entidades del dominio" as M
+}
+database MariaDB as DB
+Persona --> V
+V --> SEC : HTTP
+SEC --> C
+C --> S
+S --> R
+R --> DB : Hibernate / JDBC
+S ..> M
+C ..> V : Model y nombre de vista
+
+@enduml

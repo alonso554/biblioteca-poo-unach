@@ -1,0 +1,29 @@
+@startuml
+skinparam backgroundColor white
+skinparam defaultFontName DejaVu Sans
+skinparam defaultFontSize 15
+skinparam shadowing false
+skinparam ArrowColor #345570
+skinparam classBackgroundColor #F1F5F8
+skinparam classBorderColor #173B62
+skinparam classHeaderBackgroundColor #DCE7EF
+skinparam entityBackgroundColor #F1F5F8
+skinparam entityBorderColor #173B62
+skinparam usecaseBackgroundColor #F6F1E6
+skinparam usecaseBorderColor #AD9058
+skinparam actorBorderColor #173B62
+skinparam stateBackgroundColor #F1F5F8
+skinparam stateBorderColor #173B62
+[*] --> SOLICITADO : solicitud válida
+SOLICITADO --> PRESTADO : confirmar entrega y fecha límite
+SOLICITADO --> RECHAZADO : rechazar con observación
+PRESTADO --> DEVUELTO : registrar devolución
+RECHAZADO --> [*]
+DEVUELTO --> [*]
+note right of DEVUELTO
+ Una incidencia de daño o pérdida pendiente
+ mantiene bloqueado el ejemplar.
+ La incidencia tiene su propio estado.
+end note
+
+@enduml

@@ -1,0 +1,77 @@
+@startuml
+skinparam backgroundColor white
+skinparam defaultFontName DejaVu Sans
+skinparam defaultFontSize 15
+skinparam shadowing false
+skinparam ArrowColor #345570
+skinparam classBackgroundColor #F1F5F8
+skinparam classBorderColor #173B62
+skinparam classHeaderBackgroundColor #DCE7EF
+skinparam entityBackgroundColor #F1F5F8
+skinparam entityBorderColor #173B62
+skinparam usecaseBackgroundColor #F6F1E6
+skinparam usecaseBorderColor #AD9058
+skinparam actorBorderColor #173B62
+skinparam stateBackgroundColor #F1F5F8
+skinparam stateBorderColor #173B62
+hide empty members
+class RolSistema {
+ - id : Long
+ - nombre : Rol
+ + getNombre() : Rol
+}
+class Usuario {
+ - id : Long
+ - nombre : String
+ - usuario : String
+ - password : String
+ + getRol() : Rol
+ + setRolSistema(rol : RolSistema)
+}
+class Libro {
+ - id : Long
+ - titulo : String
+ - autor : String
+ - codigoBarras : String
+ - descripcionOriginal : String
+}
+class Lector {
+ - id : Long
+ - matricula : String
+ - nombreCompleto : String
+ - correoInstitucional : String
+ - fechaRegistro : LocalDateTime
+}
+class Prestamo {
+ - id : Long
+ - fechaSolicitud : LocalDateTime
+ - fechaPrestamo : LocalDateTime
+ - fechaLimiteDevolucion : LocalDate
+ - fechaDevolucion : LocalDateTime
+ - estado : EstadoPrestamo
+}
+class HistorialPrestamo {
+ - id : Long
+ - accion : AccionPrestamo
+ - fecha : LocalDateTime
+ - observacion : String
+}
+class Incidencia {
+ - id : Long
+ - tipo : TipoIncidencia
+ - estado : EstadoIncidencia
+ - descripcion : String
+ - solucion : String
+ + bloqueaDisponibilidad() : boolean
+}
+RolSistema "1" <-- "0..*" Usuario
+Usuario "0..1" <-- "0..*" Prestamo : administrador
+Lector "1" <-- "0..*" Prestamo
+Libro "1" <-- "0..*" Prestamo
+Prestamo "1" <-- "0..*" HistorialPrestamo
+Usuario "0..1" <-- "0..*" HistorialPrestamo
+Prestamo "1" <-- "0..*" Incidencia
+Usuario "1" <-- "0..*" Incidencia : registro
+Usuario "0..1" <-- "0..*" Incidencia : resolución
+
+@enduml

@@ -1,0 +1,86 @@
+Project biblioteca_poo {
+ database_type: 'MySQL'
+ Note: 'Modelo de siete tablas del sistema de biblioteca'
+}
+
+Table roles {
+ id bigint [pk, increment]
+ nombre varchar(20) [not null, unique]
+}
+
+
+Table usuarios {
+ id bigint [pk, increment]
+ nombre varchar(100) [not null]
+ usuario varchar(50) [not null, unique]
+ password varchar(255) [not null]
+ rol_id bigint [not null]
+}
+
+Ref: usuarios.rol_id > roles.id
+
+Table inventario_libros {
+ id bigint [pk, increment]
+ autor text
+ codigo_barras varchar(50) [not null, unique]
+ descripcion_original text [not null]
+ titulo text [not null]
+}
+
+
+Table lectores {
+ id bigint [pk, increment]
+ correo_institucional varchar(150) [not null]
+ fecha_registro datetime(6) [not null]
+ matricula varchar(50) [not null, unique]
+ nombre_completo varchar(200) [not null]
+}
+
+
+Table prestamos {
+ id bigint [pk, increment]
+ lector_id bigint [not null]
+ inventario_libro_id bigint [not null]
+ usuario_id bigint
+ fecha_solicitud datetime(6) [not null]
+ fecha_prestamo datetime(6)
+ fecha_limite_devolucion date
+ fecha_devolucion datetime(6)
+ estado varchar(20) [not null]
+ ejemplar_activo_id bigint [unique, note: 'Columna generada según estado. Véase CHECK y expresión en SQL.']
+}
+
+Ref: prestamos.lector_id > lectores.id
+Ref: prestamos.inventario_libro_id > inventario_libros.id
+Ref: prestamos.usuario_id > usuarios.id
+
+Table historial_prestamos {
+ id bigint [pk, increment]
+ prestamo_id bigint [not null]
+ usuario_id bigint
+ accion varchar(30) [not null]
+ fecha datetime(6) [not null]
+ observacion varchar(1000)
+}
+
+Ref: historial_prestamos.prestamo_id > prestamos.id
+Ref: historial_prestamos.usuario_id > usuarios.id
+
+Table incidencias_prestamos {
+ id bigint [pk, increment]
+ prestamo_id bigint [not null]
+ tipo varchar(20) [not null]
+ descripcion varchar(2000) [not null]
+ fecha_registro datetime(6) [not null]
+ administrador_registro_id bigint [not null]
+ estado varchar(20) [not null]
+ fecha_resolucion datetime(6)
+ administrador_resolucion_id bigint
+ solucion varchar(2000)
+}
+
+Ref: incidencias_prestamos.prestamo_id > prestamos.id
+Ref: incidencias_prestamos.administrador_registro_id > usuarios.id
+Ref: incidencias_prestamos.administrador_resolucion_id > usuarios.id
+
+// Las restricciones CHECK de fechas, estados y la expresión generada están en 01_crear_biblioteca_poo.sql.

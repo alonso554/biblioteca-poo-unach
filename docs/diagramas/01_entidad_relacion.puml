@@ -1,0 +1,93 @@
+@startuml
+skinparam backgroundColor white
+skinparam defaultFontName DejaVu Sans
+skinparam defaultFontSize 15
+skinparam shadowing false
+skinparam ArrowColor #345570
+skinparam classBackgroundColor #F1F5F8
+skinparam classBorderColor #173B62
+skinparam classHeaderBackgroundColor #DCE7EF
+skinparam entityBackgroundColor #F1F5F8
+skinparam entityBorderColor #173B62
+skinparam usecaseBackgroundColor #F6F1E6
+skinparam usecaseBorderColor #AD9058
+skinparam actorBorderColor #173B62
+skinparam stateBackgroundColor #F1F5F8
+skinparam stateBorderColor #173B62
+hide circle
+left to right direction
+entity roles {
+ * id : BIGINT <<PK>>
+ --
+ * nombre : VARCHAR(20) <<UQ>>
+}
+entity usuarios {
+ * id : BIGINT <<PK>>
+ --
+ * nombre : VARCHAR(100)
+ * usuario : VARCHAR(50) <<UQ>>
+ * password : VARCHAR(255)
+ * rol_id : BIGINT <<FK>>
+}
+entity inventario_libros {
+ * id : BIGINT <<PK>>
+ --
+ autor : TEXT
+ * codigo_barras : VARCHAR(50) <<UQ>>
+ * descripcion_original : TEXT
+ * titulo : TEXT
+}
+entity lectores {
+ * id : BIGINT <<PK>>
+ --
+ * matricula : VARCHAR(50) <<UQ>>
+ * nombre_completo : VARCHAR(200)
+ * correo_institucional : VARCHAR(150)
+ * fecha_registro : DATETIME
+}
+entity prestamos {
+ * id : BIGINT <<PK>>
+ --
+ * lector_id : BIGINT <<FK>>
+ * inventario_libro_id : BIGINT <<FK>>
+ usuario_id : BIGINT <<FK>>
+ * fecha_solicitud : DATETIME
+ fecha_prestamo : DATETIME
+ fecha_limite_devolucion : DATE
+ fecha_devolucion : DATETIME
+ * estado : VARCHAR(20)
+ ejemplar_activo_id : BIGINT <<derivado, UQ>>
+}
+entity historial_prestamos {
+ * id : BIGINT <<PK>>
+ --
+ * prestamo_id : BIGINT <<FK>>
+ usuario_id : BIGINT <<FK>>
+ * accion : VARCHAR(30)
+ * fecha : DATETIME
+ observacion : VARCHAR(1000)
+}
+entity incidencias_prestamos {
+ * id : BIGINT <<PK>>
+ --
+ * prestamo_id : BIGINT <<FK>>
+ * tipo : VARCHAR(20)
+ * descripcion : VARCHAR(2000)
+ * fecha_registro : DATETIME
+ * administrador_registro_id : BIGINT <<FK>>
+ * estado : VARCHAR(20)
+ fecha_resolucion : DATETIME
+ administrador_resolucion_id : BIGINT <<FK>>
+ solucion : VARCHAR(2000)
+}
+roles ||--o{ usuarios
+lectores ||--o{ prestamos
+inventario_libros ||--o{ prestamos
+usuarios |o--o{ prestamos : atiende
+prestamos ||--o{ historial_prestamos
+usuarios |o--o{ historial_prestamos : registra
+prestamos ||--o{ incidencias_prestamos
+usuarios ||--o{ incidencias_prestamos : registra
+usuarios |o--o{ incidencias_prestamos : resuelve
+
+@enduml
