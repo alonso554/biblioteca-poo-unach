@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos :: cabecera('Aviso del sistema')}"></head>
+<body>
+<header th:replace="~{fragmentos :: encabezado}"></header>
+<main class="contenido formulario-contenido">
+    <h1 th:text="${status == 403 ? 'Acceso denegado' : 'No se pudo completar la solicitud'}">Aviso</h1>
+    <p class="mensaje error" role="alert"
+       th:text="${status == 403 ? 'Tu sesión no tiene permiso para esta operación o falta un token CSRF válido.'
+          : status == 404 ? 'La página o el registro solicitado no existe.'
+          : 'Ocurrió un problema al procesar la solicitud. Revisa la conexión e inténtalo de nuevo.'}"></p>
+    <p>Estado HTTP: <strong th:text="${status}"></strong></p>
+    <a class="boton secundario" th:href="@{/catalogo}">Volver al catálogo</a>
+</main>
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos :: cabecera('Administración de libros')}"></head>
+<body>
+<header th:replace="~{fragmentos :: encabezado}"></header>
+<main class="contenido">
+    <div class="resumen">
+        <h1>Administración de libros</h1>
+        <a class="boton" th:href="@{/admin/libros/nuevo}">Registrar libro</a>
+    </div>
+    <p class="mensaje exito" role="status" th:if="${mensajeExito}" th:text="${mensajeExito}"></p>
+    <form class="buscador tarjeta" method="get" th:action="@{/admin/libros}">
+        <div class="campo">
+            <label for="texto">Título, autor o código</label>
+            <input class="form-control" type="search" id="texto" name="texto" th:value="${texto}">
+        </div>
+        <div class="campo">
+            <label for="filtro">Buscar en</label>
+            <select id="filtro" name="filtro">
+                <option value="todos" th:selected="${filtro == 'todos'}">Todos los campos</option>
+                <option value="titulo" th:selected="${filtro == 'titulo'}">Título</option>
+                <option value="autor" th:selected="${filtro == 'autor'}">Autor</option>
+                <option value="codigo" th:selected="${filtro == 'codigo'}">Código de barras</option>
+            </select>
+        </div>
+        <button class="boton" type="submit">Buscar</button>
+        <a th:href="@{/admin/libros}">Limpiar</a>
+    </form>
+    <p><strong th:text="${resultados.totalElements}">0</strong> ejemplares encontrados.</p>
+    <p th:if="${resultados.empty}">No hay ejemplares que coincidan con la búsqueda.</p>
+    <div class="tabla-contenedor table-responsive" th:unless="${resultados.empty}">
+        <table class="table align-middle mb-0">
+            <caption class="solo-lectores">Ejemplares del inventario</caption>
+            <thead><tr><th scope="col">Título y autor</th><th scope="col">Código de barras</th><th scope="col">Acciones</th></tr></thead>
+            <tbody>
+            <tr th:each="libro : ${resultados.content}">
+                <td><strong th:text="${libro.titulo}"></strong><br>
+                    <span th:text="${#strings.isEmpty(libro.autor) ? 'Autor no registrado' : libro.autor}"></span></td>
+                <td class="codigo-tabla" th:text="${libro.codigoBarras}"></td>
+                <td><div class="acciones">
+                    <a th:href="@{/admin/libros/{id}(id=${libro.id})}">Consultar</a>
+                    <a th:href="@{/admin/libros/{id}/editar(id=${libro.id})}">Editar</a>
+                    <a class="peligro-texto" th:href="@{/admin/libros/{id}/eliminar(id=${libro.id})}">Eliminar</a>
+                </div></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <nav th:replace="~{fragmentos :: paginacion(${resultados}, '/admin/libros', ${texto}, ${filtro})}"></nav>
+</main>
+</body>
+</html>

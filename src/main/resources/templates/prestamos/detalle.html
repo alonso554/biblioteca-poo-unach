@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos :: cabecera('Detalle e historial del préstamo')}"></head>
+<body>
+<header th:replace="~{fragmentos :: encabezado}"></header>
+<main class="contenido formulario-contenido">
+    <h1 th:text="${'Préstamo #' + prestamo.id}">Préstamo</h1>
+    <p class="mensaje exito" role="status" th:if="${mensajeExito}" th:text="${mensajeExito}"></p>
+    <dl class="tarjeta detalle">
+        <dt>Estado</dt><dd th:text="${prestamo.estado}"></dd>
+        <dt>Lector y matrícula</dt><dd th:text="${prestamo.lector.nombreCompleto + ' · ' + prestamo.lector.matricula}"></dd>
+        <dt>Correo institucional</dt><dd th:text="${prestamo.lector.correoInstitucional}"></dd>
+        <dt>Ejemplar</dt><dd th:text="${prestamo.libro.titulo + ' · ' + prestamo.libro.codigoBarras}"></dd>
+        <dt>Fecha de solicitud</dt><dd th:text="${#temporals.format(prestamo.fechaSolicitud, 'dd/MM/yyyy HH:mm')}"></dd>
+        <dt>Entrega</dt><dd th:text="${prestamo.fechaPrestamo == null ? 'Pendiente' : #temporals.format(prestamo.fechaPrestamo, 'dd/MM/yyyy HH:mm')}"></dd>
+        <dt>Fecha límite de devolución</dt><dd th:text="${prestamo.fechaLimiteDevolucion == null ? 'Pendiente' : #temporals.format(prestamo.fechaLimiteDevolucion, 'dd/MM/yyyy')}"></dd>
+        <dt>Devolución registrada</dt><dd th:text="${prestamo.fechaDevolucion == null ? 'Pendiente' : #temporals.format(prestamo.fechaDevolucion, 'dd/MM/yyyy HH:mm')}"></dd>
+        <dt>Personal que confirmó o resolvió la solicitud</dt><dd th:text="${prestamo.administrador == null ? 'Pendiente' : prestamo.administrador.nombre}"></dd>
+    </dl>
+    <section class="tarjeta formulario" th:if="${prestamo.estado.name() == 'SOLICITADO' || prestamo.estado.name() == 'PRESTADO'}">
+        <h2>Registrar operación</h2>
+        <form method="post" th:action="@{/admin/prestamos/{id}/confirmar(id=${prestamo.id})}" th:object="${operacion}">
+            <div class="mensaje error" role="alert" th:if="${#fields.hasAnyErrors()}">
+                <p th:each="error : ${#fields.allErrors()}" th:text="${error}"></p>
+            </div>
+            <div th:if="${prestamo.estado.name() == 'SOLICITADO'}">
+                <label for="fechaLimite">Fecha límite de devolución *</label>
+                <input class="form-control" id="fechaLimite" type="date" th:field="*{fechaLimite}" th:min="${hoy}" required>
+                <p class="aviso">Confirma la entrega física del ejemplar y acuerda esta fecha con el lector.</p>
+            </div>
+            <label for="observacion">Observación (opcional)</label>
+            <textarea id="observacion" th:field="*{observacion}" maxlength="1000" rows="3"></textarea>
+            <div class="acciones">
+                <button th:if="${prestamo.estado.name() == 'SOLICITADO'}" class="boton" type="submit">Confirmar entrega</button>
+                <button th:if="${prestamo.estado.name() == 'SOLICITADO'}" class="boton secundario" type="submit" formnovalidate
+                        th:formaction="@{/admin/prestamos/{id}/rechazar(id=${prestamo.id})}">Rechazar solicitud</button>
+                <button th:if="${prestamo.estado.name() == 'PRESTADO'}" class="boton" type="submit"
+                        th:formaction="@{/admin/prestamos/{id}/devolver(id=${prestamo.id})}">Registrar devolución física</button>
+            </div>
+        </form>
+    </section>
+    <section class="tarjeta formulario" th:if="${prestamo.fechaPrestamo != null}">
+        <h2>Incidencias del ejemplar</h2>
+        <form method="post" th:action="@{/admin/prestamos/{id}/incidencias(id=${prestamo.id})}" th:object="${incidencia}">
+            <label>Tipo <select th:field="*{tipo}" required><option value="">Selecciona</option><option th:each="tipo : ${T(com.UNACH.Biblioteca.model.TipoIncidencia).values()}" th:value="${tipo}" th:text="${tipo}"></option></select></label>
+            <label>Descripción <textarea th:field="*{descripcion}" required maxlength="2000"></textarea></label>
+            <button class="boton" type="submit">Registrar incidencia</button>
+        </form>
+        <form th:if="${prestamo.estado.name() == 'PRESTADO'}" method="post" th:action="@{/admin/prestamos/{id}/devolver-con-incidencia(id=${prestamo.id})}">
+            <input class="form-control" type="hidden" name="observacion"><label>Tipo al devolver <select name="tipo" required><option th:each="tipo : ${T(com.UNACH.Biblioteca.model.TipoIncidencia).values()}" th:value="${tipo}" th:text="${tipo}"></option></select></label><label>Descripción <textarea name="descripcion" required maxlength="2000"></textarea></label><button class="boton secundario" type="submit">Devolver con incidencia</button>
+        </form>
+        <div th:each="incidencia : ${incidencias}" class="tarjeta"><p th:text="${incidencia.tipo + ' · ' + incidencia.estado + ' · ' + incidencia.descripcion}"></p><form th:if="${incidencia.estado.name() == 'PENDIENTE'}" method="post" th:action="@{/admin/prestamos/{p}/incidencias/{i}/resolver(p=${prestamo.id},i=${incidencia.id})}" th:object="${resolucion}"><label>Solución <textarea th:field="*{solucion}" required maxlength="2000"></textarea></label><button class="boton" type="submit">Resolver</button></form><p th:if="${incidencia.estado.name() == 'RESUELTA'}" th:text="${'Solución: ' + incidencia.solucion}"></p></div>
+    </section>
+    <h2>Historial del préstamo</h2>
+    <div class="tabla-contenedor table-responsive"><table class="table align-middle mb-0">
+        <caption class="solo-lectores">Cambios de estado y personal responsable</caption>
+        <thead><tr><th scope="col">Fecha</th><th scope="col">Acción</th><th scope="col">Personal</th><th scope="col">Observación</th></tr></thead>
+        <tbody><tr th:each="evento : ${historial}">
+            <td th:text="${#temporals.format(evento.fecha, 'dd/MM/yyyy HH:mm')}"></td>
+            <td th:text="${evento.accion}"></td>
+            <td th:text="${evento.administrador == null ? 'Solicitud del lector' : evento.administrador.nombre}"></td>
+            <td th:text="${evento.observacion == null ? 'Sin observación' : evento.observacion}"></td>
+        </tr></tbody>
+    </table></div>
+    <p><a th:href="@{/admin/prestamos(estado=${prestamo.estado})}">Volver a la lista</a></p>
+</main>
+</body>
+</html>

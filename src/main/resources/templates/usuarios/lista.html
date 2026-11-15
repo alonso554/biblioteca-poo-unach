@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos :: cabecera('Administración de usuarios')}"></head>
+<body>
+<header th:replace="~{fragmentos :: encabezado}"></header>
+<main class="contenido">
+    <div class="resumen">
+        <h1>Administración de usuarios</h1>
+        <a class="boton" th:href="@{/admin/usuarios/nuevo}">Registrar usuario</a>
+    </div>
+    <p class="aviso">Estas cuentas permiten iniciar sesión. Los cambios de identificador, contraseña o rol cierran sus sesiones activas.</p>
+    <p class="mensaje exito" role="status" th:if="${mensajeExito}" th:text="${mensajeExito}"></p>
+    <p><strong th:text="${resultados.totalElements}">0</strong> usuarios registrados.</p>
+    <p th:if="${resultados.empty}">Todavía no hay usuarios registrados.</p>
+    <div class="tabla-contenedor table-responsive" th:unless="${resultados.empty}">
+        <table class="table align-middle mb-0">
+            <caption class="solo-lectores">Catálogo de usuarios</caption>
+            <thead><tr><th scope="col">Nombre</th><th scope="col">Usuario</th><th scope="col">Rol registrado</th><th scope="col">Acciones</th></tr></thead>
+            <tbody><tr th:each="usuario : ${resultados.content}">
+                <td th:text="${usuario.nombre}"></td><td th:text="${usuario.usuario}"></td><td th:text="${usuario.rol}"></td>
+                <td><div class="acciones">
+                    <a th:href="@{/admin/usuarios/{id}(id=${usuario.id})}">Consultar</a>
+                    <a th:href="@{/admin/usuarios/{id}/editar(id=${usuario.id})}">Editar</a>
+                    <a class="peligro-texto" th:href="@{/admin/usuarios/{id}/eliminar(id=${usuario.id})}">Eliminar</a>
+                </div></td>
+            </tr></tbody>
+        </table>
+    </div>
+    <nav th:replace="~{fragmentos :: paginacion(${resultados}, '/admin/usuarios', '', '')}"></nav>
+</main>
+</body>
+</html>

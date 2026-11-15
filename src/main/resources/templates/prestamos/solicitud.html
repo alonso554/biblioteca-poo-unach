@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos :: cabecera('Solicitud presencial de préstamo')}"></head>
+<body>
+<header th:replace="~{fragmentos :: encabezado}"></header>
+<main class="contenido formulario-contenido">
+    <h1>Solicitud presencial de préstamo</h1>
+    <p>Utiliza este formulario durante tu visita a la biblioteca. Puedes enviar la solicitud sin iniciar sesión. Acude al personal para verificar tus datos y confirmar la entrega del ejemplar.</p>
+    <p class="mensaje exito" th:if="${mensajeExito}" th:text="${mensajeExito}" role="status"></p>
+    <form class="tarjeta formulario" method="post" th:action="@{/prestamos/solicitar}" th:object="${formulario}">
+        <div class="mensaje error" role="alert" th:if="${#fields.hasAnyErrors()}">
+            <p th:each="error : ${#fields.allErrors()}" th:text="${error}"></p>
+        </div>
+        <label for="matricula">Matrícula o número de control *</label>
+        <input class="form-control" id="matricula" th:field="*{matricula}" required maxlength="50" autocomplete="off">
+        <label for="nombreCompleto">Nombre completo del lector *</label>
+        <input class="form-control" id="nombreCompleto" th:field="*{nombreCompleto}" required maxlength="200" autocomplete="name">
+        <label for="correoInstitucional">Correo institucional *</label>
+        <input class="form-control" id="correoInstitucional" type="email" th:field="*{correoInstitucional}" required maxlength="150" autocomplete="email">
+        <label for="codigoBarras">Código de barras del ejemplar *</label>
+        <input class="form-control" id="codigoBarras" th:field="*{codigoBarras}" required maxlength="50" autocomplete="off">
+        <p class="aviso">La solicitud queda pendiente hasta que el personal confirme la entrega y la fecha de devolución. El personal verificará tus datos.</p>
+        <div class="acciones">
+            <button class="boton" type="submit">Enviar solicitud</button>
+            <a class="boton secundario" th:href="@{/catalogo}">Volver al catálogo</a>
+        </div>
+    </form>
+</main>
+</body>
+</html>

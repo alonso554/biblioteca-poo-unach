@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos :: cabecera('Control de préstamos')}"></head>
+<body>
+<header th:replace="~{fragmentos :: encabezado}"></header>
+<main class="contenido">
+    <div class="resumen"><h1>Control de préstamos</h1><a th:href="@{/prestamos/solicitar}">Registrar solicitud</a><a th:href="@{/admin/historial/lectores}">Historial de lectores</a><a th:href="@{/admin/historial/libros}">Historial de libros</a></div>
+    <nav class="acciones filtros-prestamos" aria-label="Estados de préstamos">
+        <a th:each="opcion : ${T(com.UNACH.Biblioteca.model.EstadoPrestamo).values()}"
+           th:href="@{/admin/prestamos(estado=${opcion})}"
+           th:attr="aria-current=${opcion == estado ? 'page' : null}">
+            <span th:text="${opcion}"></span> (<span th:text="${conteos.get(opcion)}">0</span>)
+        </a>
+    </nav>
+    <p>Estado: <strong th:text="${estado}"></strong> · <span th:text="${resultados.totalElements}">0</span> registros.</p>
+    <p th:if="${resultados.empty}">No hay préstamos en este estado.</p>
+    <div class="tabla-contenedor table-responsive" th:unless="${resultados.empty}">
+        <table class="table align-middle mb-0">
+            <caption class="solo-lectores">Solicitudes y préstamos del estado seleccionado</caption>
+            <thead><tr><th scope="col">Solicitud</th><th scope="col">Lector</th><th scope="col">Ejemplar</th><th scope="col">Fecha límite</th><th scope="col">Acción</th></tr></thead>
+            <tbody><tr th:each="prestamo : ${resultados.content}">
+                <td><strong th:text="${'#' + prestamo.id}"></strong><br><span th:text="${#temporals.format(prestamo.fechaSolicitud, 'dd/MM/yyyy HH:mm')}"></span></td>
+                <td><span th:text="${prestamo.lector.nombreCompleto}"></span><br><span th:text="${prestamo.lector.matricula}"></span></td>
+                <td><span th:text="${prestamo.libro.titulo}"></span><br><code th:text="${prestamo.libro.codigoBarras}"></code></td>
+                <td th:text="${prestamo.fechaLimiteDevolucion == null ? 'Pendiente de entrega' : #temporals.format(prestamo.fechaLimiteDevolucion, 'dd/MM/yyyy')}"></td>
+                <td><a th:href="@{/admin/prestamos/{id}(id=${prestamo.id})}">Consultar y gestionar</a></td>
+            </tr></tbody>
+        </table>
+    </div>
+    <nav class="paginacion" th:if="${resultados.totalPages > 0}" aria-label="Páginas de préstamos">
+        <a class="boton secundario" th:if="${resultados.hasPrevious()}" th:href="@{/admin/prestamos(estado=${estado},pagina=${resultados.number - 1})}">Anterior</a>
+        <span>Página <strong th:text="${resultados.number + 1}"></strong> de <strong th:text="${resultados.totalPages}"></strong></span>
+        <a class="boton secundario" th:if="${resultados.hasNext()}" th:href="@{/admin/prestamos(estado=${estado},pagina=${resultados.number + 1})}">Siguiente</a>
+    </nav>
+</main>
+</body>
+</html>

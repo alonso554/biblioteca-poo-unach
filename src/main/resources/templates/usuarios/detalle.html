@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos :: cabecera('Consultar usuario')}"></head>
+<body>
+<header th:replace="~{fragmentos :: encabezado}"></header>
+<main class="contenido formulario-contenido">
+    <h1>Detalle del usuario</h1>
+    <dl class="tarjeta detalle">
+        <dt>ID</dt><dd th:text="${usuario.id}"></dd>
+        <dt>Nombre</dt><dd th:text="${usuario.nombre}"></dd>
+        <dt>Usuario</dt><dd th:text="${usuario.usuario}"></dd>
+        <dt>Rol registrado</dt><dd th:text="${usuario.rol}"></dd>
+    </dl>
+    <div class="acciones">
+        <a class="boton" th:href="@{/admin/usuarios/{id}/editar(id=${usuario.id})}">Editar</a>
+        <a class="boton secundario" th:href="@{/admin/usuarios}">Volver a usuarios</a>
+    </div>
+</main>
+</body>
+</html>

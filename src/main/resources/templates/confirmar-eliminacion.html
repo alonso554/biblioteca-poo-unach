@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos :: cabecera('Confirmar eliminación')}"></head>
+<body>
+<header th:replace="~{fragmentos :: encabezado}"></header>
+<main class="contenido formulario-contenido">
+    <h1>Confirmar eliminación</h1>
+    <section class="tarjeta">
+        <p>Vas a eliminar este registro:</p>
+        <p><strong th:text="${nombreRegistro}"></strong></p>
+        <p>Esta operación no se puede deshacer. Si existen registros relacionados, se rechazará la eliminación.</p>
+        <form class="acciones" method="post" th:action="@{${accion}}">
+            <button class="boton peligro" type="submit">Confirmar eliminación</button>
+            <a class="boton secundario" th:href="@{${volver}}">Cancelar</a>
+        </form>
+    </section>
+</main>
+</body>
+</html>

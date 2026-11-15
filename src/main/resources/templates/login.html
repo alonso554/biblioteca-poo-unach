@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Iniciar sesión | Biblioteca de Tecnologías Digitales Aplicadas</title>
+
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet"
+          th:href="@{/css/login.css}">
+</head>
+<body>
+
+    <main class="tarjeta">
+        <header>
+            <img class="logo-unach" th:src="@{/img/logo-unach.png}" alt="Escudo UNACH">
+            <h1>Biblioteca de Tecnologías Digitales Aplicadas</h1>
+            <p>Universidad Autónoma de Chiapas<br>Campus I · Acceso al sistema</p>
+        </header>
+
+        <h2 class="titulo-acceso" th:text="${sesionIniciada ? 'Sesión iniciada' : 'Iniciar sesión'}">Iniciar sesión</h2>
+
+        <p th:if="${param.error}" class="mensaje error" role="alert">
+            Usuario o contraseña incorrectos.
+        </p>
+
+        <p th:if="${param.logout}" class="mensaje exito" role="status">
+            Cerraste sesión correctamente.
+        </p>
+
+        <p th:if="${param.actualizada}" class="mensaje error" role="status">
+            Tu cuenta cambió o fue eliminada. Inicia sesión nuevamente con los datos vigentes.
+        </p>
+
+        <form th:unless="${sesionIniciada}" method="post" th:action="@{/login}">
+            <label for="usuario">Usuario</label>
+            <input
+                type="text"
+                id="usuario"
+                name="username"
+                placeholder="Escribe tu usuario"
+                autocomplete="username"
+                required>
+
+            <label for="contrasena">Contraseña</label>
+            <input
+                type="password"
+                id="contrasena"
+                name="password"
+                placeholder="Escribe tu contraseña"
+                autocomplete="current-password"
+                required>
+
+            <button type="submit">Ingresar</button>
+        </form>
+
+        <div th:if="${sesionIniciada}">
+            <a class="enlace-catalogo" th:if="${esAdmin}" th:href="@{/panel}">Volver al panel</a>
+            <form method="post" th:action="@{/logout}">
+                <button type="submit">Cerrar sesión</button>
+            </form>
+        </div>
+
+        <p class="nota">Acceso para usuarios autorizados y administradores.</p>
+        <a class="enlace-catalogo" th:href="@{/catalogo}">Volver al catálogo</a>
+    </main>
+
+</body>
+</html>

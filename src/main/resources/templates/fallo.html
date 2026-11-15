@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos :: cabecera('No se pudo completar la operación')}"></head>
+<body>
+<header th:replace="~{fragmentos :: encabezado}"></header>
+<main class="contenido formulario-contenido">
+    <h1>No se pudo completar la operación</h1>
+    <p class="mensaje error" role="alert" th:text="${mensaje}"></p>
+    <p>Estado HTTP: <strong th:text="${estado}"></strong></p>
+    <a class="boton secundario" th:href="@{/catalogo}">Volver al catálogo</a>
+</main>
+</body>
+</html>

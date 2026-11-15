@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos :: cabecera('Formulario de libro')}"></head>
+<body>
+<header th:replace="~{fragmentos :: encabezado}"></header>
+<main class="contenido formulario-contenido">
+    <h1 th:text="${edicion ? 'Editar libro' : 'Registrar libro'}">Libro</h1>
+    <p>Cada código identifica un ejemplar físico diferente.</p>
+    <form class="tarjeta formulario" method="post" th:action="@{${accion}}" th:object="${formulario}">
+        <div class="mensaje error" role="alert" th:if="${#fields.hasAnyErrors()}">
+            <p th:each="error : ${#fields.allErrors()}" th:text="${error}"></p>
+        </div>
+        <label for="titulo">Título *</label>
+        <input class="form-control" id="titulo" th:field="*{titulo}" required maxlength="16000">
+        <label for="autor">Autor</label>
+        <input class="form-control" id="autor" th:field="*{autor}" maxlength="16000">
+        <label for="codigoBarras">Código de barras *</label>
+        <input class="form-control" id="codigoBarras" th:field="*{codigoBarras}" required maxlength="50" th:readonly="${edicion}">
+        <p class="aviso" th:if="${edicion}">El código de barras se conserva para proteger la identificación del ejemplar.</p>
+        <label for="descripcionOriginal">Descripción original del inventario *</label>
+        <textarea id="descripcionOriginal" th:field="*{descripcionOriginal}" required maxlength="16000" rows="5"></textarea>
+        <div class="acciones">
+            <button class="boton" type="submit">Guardar libro</button>
+            <a class="boton secundario" th:href="@{/admin/libros}">Cancelar</a>
+        </div>
+    </form>
+</main>
+</body>
+</html>

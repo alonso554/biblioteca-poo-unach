@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Catálogo | Biblioteca de Tecnologías Digitales Aplicadas</title>
+
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/catalogo.css}">
+</head>
+<body>
+
+<header class="encabezado">
+    <div class="barra">
+
+        <a class="marca"
+           th:href="@{/catalogo}"
+           aria-label="Biblioteca de Tecnologías Digitales Aplicadas, inicio">
+
+            <img class="logo"
+                 th:src="@{/img/logo-unach.png}"
+                 alt="Escudo UNACH">
+
+            <div class="identidad">
+                <span class="universidad">
+                    Universidad Autónoma de Chiapas
+                </span>
+
+                <strong>
+                    Biblioteca de Tecnologías Digitales Aplicadas
+                </strong>
+
+                <span class="subtitulo">
+                    Campus I · Catálogo bibliográfico
+                </span>
+            </div>
+        </a>
+
+        <nav aria-label="Navegación principal">
+
+            <a class="enlace-administrativo" th:href="@{/prestamos/solicitar}">Solicitar ejemplar</a>
+            <a class="enlace-administrativo" th:if="${sesionIniciada == true and esAdmin != true}" th:href="@{/usuarios/registro}">Registrar usuario</a>
+
+            <a class="enlace-administrativo"
+               th:unless="${sesionIniciada}"
+               th:href="@{/login}">
+                Iniciar sesión
+            </a>
+
+            <a class="enlace-administrativo"
+               th:if="${esAdmin}"
+               th:href="@{/panel}">
+                Panel
+            </a>
+
+            <form th:if="${sesionIniciada}"
+                  th:action="@{/logout}"
+                  method="post">
+
+                <button class="boton secundario" type="submit">
+                    Cerrar sesión
+                </button>
+            </form>
+
+        </nav>
+    </div>
+</header>
+
+<main class="contenido">
+
+    <section class="bienvenida">
+        <h1>Consulta de libros</h1>
+        <p>Busca por título, autor o código de barras.</p>
+    </section>
+
+    <section class="tarjeta" aria-label="Buscador de libros">
+        <form class="buscador"
+              th:action="@{/catalogo}"
+              method="get">
+
+            <div class="campo">
+                <label for="texto">¿Qué libro buscas?</label>
+
+                <input class="form-control" id="texto"
+                       name="texto"
+                       type="search"
+                       th:value="${texto}"
+                       placeholder="Escribe un título, autor o código"
+                       autocomplete="off">
+            </div>
+
+            <div class="campo">
+                <label for="filtro">Buscar en</label>
+
+                <select id="filtro" name="filtro">
+                    <option value="todos"
+                            th:selected="${filtro == 'todos'}">
+                        Todos los campos
+                    </option>
+
+                    <option value="titulo"
+                            th:selected="${filtro == 'titulo'}">
+                        Título
+                    </option>
+
+                    <option value="autor"
+                            th:selected="${filtro == 'autor'}">
+                        Autor
+                    </option>
+
+                    <option value="codigo"
+                            th:selected="${filtro == 'codigo'}">
+                        Código de barras
+                    </option>
+                </select>
+            </div>
+
+            <button class="boton" type="submit">
+                Buscar
+            </button>
+
+        </form>
+    </section>
+
+    <section class="resultados" aria-labelledby="titulo-resultados">
+
+        <div class="resumen">
+            <div>
+                <h2 id="titulo-resultados"
+                    th:text="${#strings.isEmpty(texto)
+                        ? 'Catálogo de libros' : 'Resultados de búsqueda'}">
+                    Catálogo de libros
+                </h2>
+
+                <p>
+                    <strong th:text="${resultados.totalElements}">0</strong>
+
+                    <span th:text="${#strings.isEmpty(texto)
+                        ? 'ejemplares registrados' : 'ejemplares encontrados'}">
+                        ejemplares registrados
+                    </span>
+                </p>
+            </div>
+
+            <a class="enlace"
+               th:if="${!#strings.isEmpty(texto)}"
+               th:href="@{/catalogo}">
+                Limpiar búsqueda
+            </a>
+        </div>
+
+        <p class="aviso">
+            El estado se calcula con las solicitudes y préstamos registrados. El personal confirma la entrega física del ejemplar.
+        </p>
+
+        <div class="vacio" th:if="${resultados.empty}">
+            <h3>No encontramos coincidencias</h3>
+
+            <p>
+                Prueba con otra palabra o selecciona “Todos los campos”.
+            </p>
+        </div>
+
+        <div class="lista" th:unless="${resultados.empty}">
+
+            <article class="libro"
+                     th:each="libro : ${resultados.content}">
+
+                <div class="informacion-libro">
+                    <h3 th:text="${libro.titulo}">
+                        Título del libro
+                    </h3>
+
+                    <p class="autor">
+                        <strong>Autor:</strong>
+
+                        <span th:text="${#strings.isEmpty(libro.autor)
+                            ? 'Autor no registrado' : libro.autor}">
+                            Autor
+                        </span>
+                    </p>
+                </div>
+
+                <div class="identificador">
+                    <span class="estado-ejemplar" th:text="${estadosEjemplares[libro.id].name() == 'DISPONIBLE'
+                        ? 'Disponible para solicitud' : estadosEjemplares[libro.id]}"></span>
+                    <span class="codigo-etiqueta">Código de barras</span>
+
+                    <span class="codigo" th:text="${libro.codigoBarras}">
+                        Código
+                    </span>
+                    <a th:if="${estadosEjemplares[libro.id].name() == 'DISPONIBLE'}"
+                       th:href="@{/prestamos/solicitar(codigo=${libro.codigoBarras})}">Solicitar ejemplar</a>
+                </div>
+
+                <details>
+                    <summary>Ver descripción del inventario</summary>
+
+                    <p th:text="${libro.descripcionOriginal}">
+                        Descripción original
+                    </p>
+                </details>
+
+            </article>
+        </div>
+
+        <nav class="paginacion"
+             aria-label="Páginas de resultados"
+             th:if="${resultados.totalPages > 0}">
+
+            <a class="boton secundario"
+               th:if="${resultados.hasPrevious()}"
+               th:href="@{/catalogo(
+                    texto=${texto},
+                    filtro=${filtro},
+                    pagina=${resultados.number - 1})}">
+                Anterior
+            </a>
+
+            <span>
+                Página
+                <strong th:text="${resultados.number + 1}">1</strong>
+                de
+                <strong th:text="${resultados.totalPages}">1</strong>
+            </span>
+
+            <a class="boton secundario"
+               th:if="${resultados.hasNext()}"
+               th:href="@{/catalogo(
+                    texto=${texto},
+                    filtro=${filtro},
+                    pagina=${resultados.number + 1})}">
+                Siguiente
+            </a>
+
+        </nav>
+    </section>
+
+</main>
+
+<footer class="pie-pagina">
+    <strong>Biblioteca de Tecnologías Digitales Aplicadas</strong>
+    <span>Universidad Autónoma de Chiapas · Campus I</span>
+</footer>
+
+</body>
+</html>

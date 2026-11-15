@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="cabecera(titulo)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${titulo + ' | Biblioteca de Tecnologías Digitales Aplicadas'}">Biblioteca UNACH</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/catalogo.css}">
+    <link rel="stylesheet" th:href="@{/css/gestion.css}">
+</head>
+<body>
+<header class="encabezado" th:fragment="encabezado">
+    <div class="barra">
+        <a class="marca" th:href="@{/catalogo}">
+            <img class="logo" th:src="@{/img/logo-unach.png}" alt="Escudo UNACH">
+            <div class="identidad">
+                <span class="universidad">Universidad Autónoma de Chiapas</span>
+                <strong>Biblioteca de Tecnologías Digitales Aplicadas</strong>
+                <span class="subtitulo">Campus I</span>
+            </div>
+        </a>
+        <nav aria-label="Navegación principal">
+            <a th:href="@{/catalogo}">Catálogo</a>
+            <a th:if="${esAdmin}" th:href="@{/panel}">Panel</a>
+            <a th:if="${esAdmin}" th:href="@{/admin/libros}">Libros</a>
+            <a th:if="${esAdmin}" th:href="@{/admin/usuarios}">Usuarios</a>
+            <a th:if="${esAdmin}" th:href="@{/admin/prestamos}">Préstamos</a>
+            <a th:if="${sesionIniciada == true and esAdmin != true}" th:href="@{/usuarios/registro}">Registrar usuario</a>
+            <a th:href="@{/prestamos/solicitar}">Solicitar ejemplar</a>
+            <form th:if="${sesionIniciada}" method="post" th:action="@{/logout}">
+                <button class="boton secundario" type="submit">Cerrar sesión</button>
+            </form>
+        </nav>
+    </div>
+</header>
+<nav class="paginacion" th:fragment="paginacion(resultados, ruta, texto, filtro)"
+     th:if="${resultados.totalPages > 0}" aria-label="Páginas de resultados">
+    <a class="boton secundario" th:if="${resultados.hasPrevious()}"
+       th:href="@{${ruta}(pagina=${resultados.number - 1},texto=${texto},filtro=${filtro})}">Anterior</a>
+    <span>Página <strong th:text="${resultados.number + 1}">1</strong>
+        de <strong th:text="${resultados.totalPages}">1</strong></span>
+    <a class="boton secundario" th:if="${resultados.hasNext()}"
+       th:href="@{${ruta}(pagina=${resultados.number + 1},texto=${texto},filtro=${filtro})}">Siguiente</a>
+</nav>
+</body>
+</html>

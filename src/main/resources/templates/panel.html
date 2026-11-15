@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel | Biblioteca de Tecnologías Digitales Aplicadas</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/login.css}">
+</head>
+<body>
+
+<main class="panel">
+    <header>
+        <img class="logo-unach" th:src="@{/img/logo-unach.png}" alt="Escudo UNACH">
+        <h2>Biblioteca de Tecnologías Digitales Aplicadas</h2>
+        <p>Universidad Autónoma de Chiapas · Campus I</p>
+    </header>
+
+    <h1>Panel de administración</h1>
+
+    <p>
+        Bienvenido,
+        <strong th:text="${nombreUsuario}">administrador</strong>.
+    </p>
+
+    <p class="mensaje exito">Iniciaste sesión correctamente.</p>
+
+    <a class="enlace-catalogo" th:if="${esAdmin}" th:href="@{/admin/libros}">Administrar libros</a>
+    <a class="enlace-catalogo" th:if="${esAdmin}" th:href="@{/admin/usuarios}">Administrar usuarios</a>
+    <a class="enlace-catalogo" th:if="${esAdmin}" th:href="@{/admin/prestamos}">Control de préstamos e historial</a>
+    <a class="enlace-catalogo" th:if="${esAdmin}" th:href="@{/admin/historial/lectores}">Historial de lectores</a>
+    <a class="enlace-catalogo" th:if="${esAdmin}" th:href="@{/admin/historial/libros}">Historial de libros</a>
+    <div th:if="${esAdmin}">
+        <a class="enlace-catalogo" th:href="@{/admin/prestamos(estado='SOLICITADO')}">Solicitudes pendientes: <span th:text="${solicitudesPendientes}"></span></a>
+        <a class="enlace-catalogo" th:href="@{/admin/prestamos(estado='PRESTADO')}">Préstamos activos: <span th:text="${prestamosActivos}"></span></a>
+        <a class="enlace-catalogo" th:href="@{/admin/prestamos(estado='DEVUELTO')}">Préstamos devueltos: <span th:text="${prestamosDevueltos}"></span></a>
+    </div>
+    <a class="enlace-catalogo" th:href="@{/prestamos/solicitar}">Solicitud presencial de préstamo</a>
+    <a class="enlace-catalogo" th:href="@{/usuarios/registro}">Registrar usuario</a>
+
+    <a class="enlace-catalogo" th:href="@{/catalogo}">Consultar catálogo</a>
+
+    <form method="post" th:action="@{/logout}">
+        <button type="submit">Cerrar sesión</button>
+    </form>
+</main>
+
+</body>
+</html>

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos :: cabecera('Consultar libro')}"></head>
+<body>
+<header th:replace="~{fragmentos :: encabezado}"></header>
+<main class="contenido formulario-contenido">
+    <h1>Detalle del ejemplar</h1>
+    <dl class="tarjeta detalle">
+        <dt>ID</dt><dd th:text="${libro.id}"></dd>
+        <dt>Título</dt><dd th:text="${libro.titulo}"></dd>
+        <dt>Autor</dt><dd th:text="${#strings.isEmpty(libro.autor) ? 'Autor no registrado' : libro.autor}"></dd>
+        <dt>Código de barras</dt><dd th:text="${libro.codigoBarras}"></dd>
+        <dt>Descripción del inventario</dt><dd th:text="${libro.descripcionOriginal}"></dd>
+    </dl>
+    <div class="acciones">
+        <a class="boton" th:href="@{/admin/libros/{id}/editar(id=${libro.id})}">Editar</a>
+        <a class="boton" th:href="@{/admin/historial/libros/{id}(id=${libro.id})}">Historial del ejemplar</a>
+        <a class="boton secundario" th:href="@{/admin/libros}">Volver a libros</a>
+    </div>
+</main>
+</body>
+</html>

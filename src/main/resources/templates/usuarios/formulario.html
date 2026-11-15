@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos :: cabecera('Registro de usuario')}"></head>
+<body>
+<header th:replace="~{fragmentos :: encabezado}"></header>
+<main class="contenido formulario-contenido">
+    <h1 th:text="${edicion ? 'Editar usuario' : 'Registrar usuario'}">Usuario</h1>
+    <p>El usuario registrado podrá iniciar sesión con su identificador y contraseña.</p>
+    <p class="mensaje exito" role="status" th:if="${mensajeExito}" th:text="${mensajeExito}"></p>
+    <form class="tarjeta formulario" method="post" th:action="@{${accion}}" th:object="${formulario}">
+        <div class="mensaje error" role="alert" th:if="${#fields.hasAnyErrors()}">
+            <p th:each="error : ${#fields.allErrors()}" th:text="${error}"></p>
+        </div>
+        <label for="nombre">Nombre completo *</label>
+        <input class="form-control" id="nombre" th:field="*{nombre}" required maxlength="100" autocomplete="name">
+        <label for="usuario">Identificador de usuario *</label>
+        <input class="form-control" id="usuario" th:field="*{usuario}" required maxlength="50" autocomplete="off">
+        <label for="clave" th:text="${edicion ? 'Nueva contraseña (opcional)' : 'Contraseña *'}">Contraseña</label>
+        <input class="form-control" id="clave" name="clave" type="password" th:required="${!edicion}" minlength="8" maxlength="72" autocomplete="new-password">
+        <p class="aviso" th:if="${edicion}">Deja la contraseña vacía para conservar la actual. Cambiar el identificador, la contraseña o el rol cerrará las sesiones de esta cuenta, incluida la tuya si estás editando tu propio usuario.</p>
+        <div th:if="${esAdmin}">
+            <label for="rol">Rol registrado *</label>
+            <select id="rol" th:field="*{rol}">
+                <option value="USUARIO">USUARIO</option>
+                <option value="ADMIN">ADMIN</option>
+            </select>
+        </div>
+        <p class="aviso" th:unless="${esAdmin}">Los nuevos registros se guardan con el rol USUARIO.</p>
+        <div class="acciones">
+            <button class="boton" type="submit">Guardar usuario</button>
+            <a class="boton secundario" th:href="${registroLimitado} ? @{/catalogo} : @{/admin/usuarios}">Cancelar</a>
+        </div>
+    </form>
+</main>
+</body>
+</html>
